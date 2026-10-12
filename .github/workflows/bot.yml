@@ -1,0 +1,40 @@
+name: bot
+on:
+  schedule:
+    - cron: "*/5 * * * *"   # цикл каждые 5 минут (GitHub не даёт чаще)
+  workflow_dispatch:
+
+concurrency:
+  group: olx-phone-bot
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  cycle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: deps
+        run: pip install -q requests pyyaml
+      - name: git identity
+        run: |
+          git config user.name "olx-phone-bot"
+          git config user.email "olx-phone-bot@users.noreply.github.com"
+      - name: cycle
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          ADMIN_CHAT_ID: ${{ secrets.ADMIN_CHAT_ID }}
+          SCAN_PAGES: "2"
+          MAX_ADS_PER_CYCLE: "30"
+          DEAL_MIN_DISCOUNT_PCT: "15"
+          HOT_DISCOUNT_PCT: "25"
+          SUSPICIOUS_BELOW_PCT: "40"
+          SUSPICIOUS_MODE: "skip"
+          FALLBACK_USD_RATE: "11850"
+        run: python bot/main.py

@@ -1,0 +1,16 @@
+[Unit]
+Description=OLX Phone Hunter Telegram bot
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=/opt/olx-phone-bot
+EnvironmentFile=/opt/olx-phone-bot/.env
+ExecStart=/usr/bin/python3 -u bot/main.py --loop
+Restart=always
+RestartSec=15
+StandardOutput=append:/var/log/olx-phone-bot.log
+StandardError=append:/var/log/olx-phone-bot.log
+
+[Install]
+WantedBy=multi-user.target

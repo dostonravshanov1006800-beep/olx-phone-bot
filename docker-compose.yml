@@ -1,0 +1,13 @@
+services:
+  bot:
+    build: .
+    container_name: olx-phone-bot
+    env_file: .env
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import pathlib;import time;p=pathlib.Path('/app/data/state.json');exit(0 if p.exists() and time.time()-p.stat().st_mtime < 1800 else 1)"]
+      interval: 10m
+      timeout: 10s
+      retries: 3
