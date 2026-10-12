@@ -1,0 +1,16 @@
+name: probe
+on: [workflow_dispatch]
+jobs:
+  p:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          U="https://www.olx.uz/elektronika/telefony/mobilnye-telefony/"
+          test() { code=$(curl -s -o b.txt --max-time 90 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/128.0.0.0" "$1"); echo "== $1 -> $code, bytes=$(wc -c < b.txt), olxlinks=$(grep -c 'd/obyavlenie' b.txt || true)"; }
+          test "https://r.jina.ai/$U"
+          sleep 5
+          test "https://api.allorigins.win/raw?url=$(python3 -c 'import urllib.parse;print(urllib.parse.quote("'$U'",safe=""))')"
+          sleep 5
+          test "https://api.codetabs.com/v1/proxy?quest=$U"
+          sleep 5
+          test "https://r.jina.ai/$U"
