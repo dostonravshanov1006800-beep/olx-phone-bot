@@ -1,0 +1,14 @@
+name: probe
+on: [workflow_dispatch, push]
+permissions: contents: write
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          UA="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
+          for u in "https://www.olx.uz/ru/uzbekistan/mobil-telefony/" "https://www.olx.uz/ru/uzbekistan/elektronika/mobilnye-telefony/" "https://www.olx.uz/d/ozbekiston/mobil-telefony/"; do
+            code=$(curl -s -o body.txt -w "%{http_code}" -A "$UA" -H "Accept-Language: ru-RU,ru;q=0.9" --compressed -L "$u")
+            echo "URL $u -> HTTP $code"
+            head -c 200 body.txt | tr -d '\0'; echo; echo ---
+          done
