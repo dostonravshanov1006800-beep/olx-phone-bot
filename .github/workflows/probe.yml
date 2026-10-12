@@ -6,11 +6,13 @@ jobs:
     steps:
       - run: |
           U="https://www.olx.uz/elektronika/telefony/mobilnye-telefony/"
-          test() { code=$(curl -s -o b.txt --max-time 90 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/128.0.0.0" "$1"); echo "== $1 -> $code, bytes=$(wc -c < b.txt), olxlinks=$(grep -c 'd/obyavlenie' b.txt || true)"; }
+          ENC="https%3A%2F%2Fwww.olx.uz%2Felektronika%2Ftelefony%2Fmobilnye-telefony%2F"
+          test() { code=$(curl -s -o b.txt --max-time 75 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/128.0.0.0" "$1"); echo "== RESULT $1 -> $code bytes=$(wc -c < b.txt) olx=$(grep -c 'd/obyavlenie' b.txt 2>/dev/null || echo 0)"; head -c 150 b.txt; echo; }
           test "https://r.jina.ai/$U"
-          sleep 5
-          test "https://api.allorigins.win/raw?url=$(python3 -c 'import urllib.parse;print(urllib.parse.quote("'$U'",safe=""))')"
-          sleep 5
+          test "https://api.allorigins.win/raw?url=$ENC"
           test "https://api.codetabs.com/v1/proxy?quest=$U"
-          sleep 5
-          test "https://r.jina.ai/$U"
+          test "https://test.cors.workers.dev/?$U"
+          test "https://md.dhr.wtf/?url=$U"
+          test "https://translate.googleapis.com/translate_c?u=$U&sl=ru&tl=en&client=gtx"
+          test "https://olx.uz/robots.txt"
+          test "https://www.olx.uz/robots.txt"
