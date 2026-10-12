@@ -5,4 +5,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY bot/ bot/
 COPY models.yaml .
 RUN mkdir -p data
-CMD ["python", "-u", "bot/main.py", "--loop"]
+CMD ["python", "-u", "-m", "bot.main", "--loop"]

@@ -37,4 +37,4 @@ jobs:
           SUSPICIOUS_BELOW_PCT: "40"
           SUSPICIOUS_MODE: "skip"
           FALLBACK_USD_RATE: "11850"
-        run: python bot/main.py
+        run: python -m bot.main

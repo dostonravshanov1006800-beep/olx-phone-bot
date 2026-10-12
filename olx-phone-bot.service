@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 WorkingDirectory=/opt/olx-phone-bot
 EnvironmentFile=/opt/olx-phone-bot/.env
-ExecStart=/usr/bin/python3 -u bot/main.py --loop
+ExecStart=/usr/bin/python3 -u -m bot.main --loop
 Restart=always
 RestartSec=15
 StandardOutput=append:/var/log/olx-phone-bot.log
