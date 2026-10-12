@@ -50,17 +50,25 @@ def _jina_fetch(url: str) -> str:
 
 
 def fetch_listing(page: int = 1) -> str:
-    """Страница выдачи (markdown/html). Ретраи с backoff, блок -> OlxBlocked."""
+    """Страница выдачи (markdown/html).
+
+    Прямой запрос (VPS), иначе Jina Reader. У Jina лимит запросов в минуту
+    на IP, поэтому между попытками длинные паузы (30-60 c).
+    """
     url = LISTING_URL if page <= 1 else f"{LISTING_URL}?page={page}"
+    try:
+        return _direct_fetch(url)
+    except (OlxBlocked, requests.RequestException) as e:
+        log.debug("direct fetch failed: %s", e)
     last = None
     for attempt in range(3):
-        for fetcher in (_direct_fetch, _jina_fetch):
-            try:
-                return fetcher(url)
-            except (OlxBlocked, requests.RequestException) as e:
-                last = e
-                log.debug("fetch attempt failed (%s): %s", fetcher.__name__, e)
-        time.sleep((2 ** attempt) * 3 + random.uniform(0, 2))
+        try:
+            return _jina_fetch(url)
+        except (OlxBlocked, requests.RequestException) as e:
+            last = e
+            log.warning("jina attempt %d failed: %s", attempt + 1, e)
+        if attempt < 2:
+            time.sleep(30 + attempt * 15)
     raise OlxBlocked(f"all attempts failed: {last}")
 
 
